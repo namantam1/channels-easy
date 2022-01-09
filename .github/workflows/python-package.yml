@@ -51,30 +51,25 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
-          poetry add coveralls
 
       - name: Test with pytest
         run: |
           poetry run coverage run -m pytest
-          poetry run coverage report
-          poetry run coveralls --output=lcov.info          
+          poetry run coverage report        
 
-      - name: Publishing coverage to Coveralls
-        uses: coverallsapp/github-action@master
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@master
         with:
-          github-token: ${{ secrets.github_token }}
-          flag-name: Python-${{ matrix.python-version }}
-          path-to-lcov: lcov.info
           parallel: true
+          flag-name: Python-${{ matrix.python-version }}
           
-  finish:
+  coveralls_finish:
     needs: test
     runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
+      uses: AndreMiras/coveralls-python-action@master
       with:
-        github-token: ${{ secrets.github_token }}
         parallel-finished: true
 
 #     - name: Lint with flake8
