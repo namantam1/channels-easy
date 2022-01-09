@@ -1,0 +1,24 @@
+# taken from poetry
+[flake8]
+ignore = E501, E203, W503
+
+max-line-length = 88
+
+exclude =
+    .git
+    __pycache__
+    setup.py
+    build
+    dist
+    releases
+    .venv
+    .tox
+    .mypy_cache
+    .pytest_cache
+    .vscode
+    .github
+    poetry/utils/_compat.py
+    poetry/utils/env_scripts/tags.py
+    tests/fixtures/
+    tests/repositories/fixtures/
+    tests/utils/fixtures/

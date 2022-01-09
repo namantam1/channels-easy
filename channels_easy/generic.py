@@ -1,21 +1,18 @@
+from logging import Logger
 from typing import Any, Iterable, Union
+
 from channels.generic.websocket import AsyncWebsocketConsumer as BaseConsumer
 
 from . import json
 
-from logging import Logger
-
 logger = Logger(__name__)
 
 
-def get_handler_name(handler_name):
+def get_handler_name(typ):
     """
-    Looks at a message, checks it has a sensible type, and returns the
-    handler name for that type.
+    Returns the handler name from type.
     """
-    if handler_name.startswith("_"):
-        return
-    return "on_%s" % handler_name
+    return "on_%s" % typ
 
 
 class AsyncWebsocketConsumer(BaseConsumer):
@@ -27,6 +24,8 @@ class AsyncWebsocketConsumer(BaseConsumer):
         """
         if isinstance(room, str):
             rooms = [room]
+        else:
+            rooms = room
         for _room in rooms:
             await self.channel_layer.group_add(_room, self.channel_name)
 
@@ -38,6 +37,8 @@ class AsyncWebsocketConsumer(BaseConsumer):
         """
         if isinstance(room, str):
             rooms = [room]
+        else:
+            rooms = room
         for _room in rooms:
             await self.channel_layer.group_discard(_room, self.channel_name)
 
