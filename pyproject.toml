@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "channels-easy"
+version = "0.1.0"
+description = "A thin wrapper around channels consumer to make things EASY"
+authors = ["Naman Tamrakar <namantam1@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = ""
+repository = ""
+keywords = ["channels", "django", "websocket"]
+
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+Django = ">=3.0"
+channels = ">=3.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^21.12b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
