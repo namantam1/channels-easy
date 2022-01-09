@@ -18,27 +18,40 @@ pip install -e git+git://github.com/namantam1/channels-easy.git#egg=channels-eas
 ```
 <!-- TODO: Describe further installation steps (edit / remove the examples below): -->
 
-Add ``channels-easy`` to your ``INSTALLED_APPS``
+As `channels-easy` is a thin wrapper around `channels` so channels must be in your `INSTALLED_APPS` in `settings.py`.
 
 ```bash
 INSTALLED_APPS = (
     ...,
-    'channels-easy',
+    'channels',
 )
 ```
-<!-- Add the ``channels-easy`` URLs to your ``urls.py``
-
-```bash
-urlpatterns = [
-    url(r'^VAR_URL_HOOK/', include('channels-easy.urls')),
-]
-``` -->
 
 Usage
 -----
 
-TODO: Describe usage or point to docs. Also describe available settings.
+All the naming convention used to implement this library is inspired from [socket.io](https://socket.io/) to make server implementation simple.
 
+```python
+# consumers.py
+from channels_easy.generic import AsyncWebsocketConsumer
+
+
+class NewConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        # join room on connect
+        await self.join("room1")
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        # Leave room on disconnect
+        await self.leave("room1")
+
+    async def on_message(self, data):
+        print("message from client", data)
+        await self.emit("message", "room1", {"message": "hello from server"})
+
+```
 
 Contribute
 ----------
