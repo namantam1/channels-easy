@@ -5,8 +5,8 @@ description = "A thin wrapper around channels consumer to make things EASY"
 authors = ["Naman Tamrakar <namantam1@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = ""
-repository = ""
+homepage = "https://github.com/namantam1/channels-easy"
+repository = "https://github.com/namantam1/channels-easy"
 keywords = ["channels", "django", "websocket"]
 
 

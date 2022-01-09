@@ -14,7 +14,7 @@ pip install channels-easy
 To get the latest commit from GitHub
 
 ```bash
-pip install -e git+git://VAR_GITHUB_REPO.git#egg=channels-easy
+pip install -e git+git://github.com/namantam1/channels-easy.git#egg=channels-easy
 ```
 <!-- TODO: Describe further installation steps (edit / remove the examples below): -->
 
