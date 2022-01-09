@@ -71,12 +71,12 @@ class AsyncWebsocketConsumer(BaseConsumer):
             await self.channel_layer.group_send(
                 group,
                 {
-                    "type": "_send_message",
+                    "type": "send_message",
                     "message": {"type": typ, "data": data},
                 },
             )
 
-    async def _send_message(self, event):
+    async def send_message(self, event):
         """
         Send message to client
         """
