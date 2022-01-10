@@ -56,6 +56,12 @@ jobs:
         run: |
           poetry run coverage run -m pytest
           poetry run coverage report
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
 #     - name: Lint with flake8
 #       run: |
