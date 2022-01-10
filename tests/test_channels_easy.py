@@ -6,7 +6,7 @@ from channels_easy.generic import AsyncWebsocketConsumer
 
 
 def test_version():
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.2.1"
 
 
 @pytest.mark.django_db
@@ -81,5 +81,41 @@ async def test_multiple_async_websocket_consumer():
     assert response == text_data
     assert results["received"] == "hello"
     # Test close
+    await communicator.disconnect()
+    assert "disconnected" in results
+
+
+@pytest.mark.django_db
+@pytest.mark.asyncio
+async def test_error_async_websocket_consumer():
+    results = {}
+    message = '{"type": "message", "data": "hello"}'
+
+    class TestAsyncConsumer(AsyncWebsocketConsumer):
+        async def connect(self):
+            results["connected"] = True
+            await self.join("room1")
+            await self.accept()
+
+        async def on_message(self, data):
+            results["received"] = data
+            await self.close_with_error("some error!")
+
+        async def disconnect(self, code):
+            results["disconnected"] = True
+
+    app = TestAsyncConsumer()
+
+    # Test connection
+    communicator = WebsocketCommunicator(app, "/testws/")
+    connected, _ = await communicator.connect()
+    assert connected
+    assert "connected" in results
+    # Test sending Text
+    await communicator.send_to(text_data=message)
+    response = await communicator.receive_from()
+    assert results["received"] == "hello"
+    # Test close with error message
+    assert response == '{"type": "error", "data": "some error!"}'
     await communicator.disconnect()
     assert "disconnected" in results

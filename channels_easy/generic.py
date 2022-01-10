@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import Any, Iterable, Union
+from typing import Iterable, Union
 
 from channels.generic.websocket import AsyncWebsocketConsumer as BaseConsumer
 
@@ -16,6 +16,51 @@ def get_handler_name(typ):
 
 
 class AsyncWebsocketConsumer(BaseConsumer):
+    async def close_with_error(self, error_data, code=None):
+        """Close socket after emitting error message
+
+        Args:
+            error_data (Any): Any json serializable data
+            code (int): Close code pass to close
+        """
+        await self.emit_error(error_data)
+        await self.close(code)
+
+    async def emit(self, typ: str, to: Union[str, Iterable], data):
+        """Send message to given rooms
+
+        Args:
+            typ (str): message type
+            to (Union[str, Iterable]): List of rooms or a single room
+            data (Any): data which is json serializable
+        """
+        if not isinstance(to, (list, tuple, set)):
+            to = [to]
+        # send to each channels
+        for group in set(to):
+            await self.channel_layer.group_send(
+                group,
+                {
+                    "type": "send_message",
+                    "message": {"type": typ, "data": data},
+                },
+            )
+
+    async def emit_error(self, data):
+        """Emit message with `error` type and data
+
+        Args:
+            data (Any): Any json serializable value
+        """
+        await self.send(
+            json.dumps(
+                dict(
+                    type="error",
+                    data=data,
+                )
+            )
+        )
+
     async def join(self, room: Union[str, Iterable]):
         """Join room with passed name
 
@@ -56,26 +101,6 @@ class AsyncWebsocketConsumer(BaseConsumer):
                 logger.warning("%s event is not handled", handler_name)
         else:
             logger.warning("Event without type recieved from client")
-
-    async def emit(self, typ: str, to: Union[str, Iterable], data: Any):
-        """Send message to given rooms
-
-        Args:
-            typ (str): message type
-            to (Union[str, Iterable]): List of rooms or a single room
-            data (Any): data which is json serializable
-        """
-        if not isinstance(to, (list, tuple, set)):
-            to = [to]
-        # send to each channels
-        for group in set(to):
-            await self.channel_layer.group_send(
-                group,
-                {
-                    "type": "send_message",
-                    "message": {"type": typ, "data": data},
-                },
-            )
 
     async def send_message(self, event):
         """
