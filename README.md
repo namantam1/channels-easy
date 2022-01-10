@@ -1,3 +1,8 @@
+[![codecov](https://codecov.io/gh/namantam1/channels-easy/branch/main/graph/badge.svg?token=QGazPv0Bcj)](https://codecov.io/gh/namantam1/channels-easy)
+[![Release](https://github.com/namantam1/channels-easy/actions/workflows/release.yaml/badge.svg)](https://github.com/namantam1/channels-easy/actions/workflows/release.yaml)
+[![Test](https://github.com/namantam1/channels-easy/actions/workflows/python-package.yml/badge.svg)](https://github.com/namantam1/channels-easy/actions/workflows/python-package.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 channels-easy
 ============
 
