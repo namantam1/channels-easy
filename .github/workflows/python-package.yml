@@ -55,12 +55,13 @@ jobs:
       - name: Test with pytest
         run: |
           poetry run coverage run -m pytest
-          poetry run coverage report
+          poetry run coverage xml
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
           verbose: true
 
 #     - name: Lint with flake8
