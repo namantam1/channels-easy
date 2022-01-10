@@ -97,9 +97,9 @@ class AsyncWebsocketConsumer(BaseConsumer):
             handler = getattr(self, handler_name, None)
             if handler:
                 await handler(json_data["data"])
-            else:
+            else:  # pragma: no cover
                 logger.warning("%s event is not handled", handler_name)
-        else:
+        else:  # pragma: no cover
             logger.warning("Event without type recieved from client")
 
     async def send_message(self, event):
