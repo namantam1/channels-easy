@@ -52,7 +52,9 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+    <li class="toctree-l2"><a class="reference internal" href="#example">Example</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#api-usage">API Usage</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#contribute">Contribute</a>
     </li>
@@ -100,8 +102,13 @@
 <a href="https://github.com/namantam1/channels-easy/actions/workflows/release.yaml"><img alt="Release" src="https://github.com/namantam1/channels-easy/actions/workflows/release.yaml/badge.svg" /></a>
 <a href="https://github.com/namantam1/channels-easy/actions/workflows/python-package.yml"><img alt="Test" src="https://github.com/namantam1/channels-easy/actions/workflows/python-package.yml/badge.svg" /></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
-<h1 id="channels-easy">channels-easy</h1>
-<p>A thin wrapper around channel consumers to make things <strong>EASY</strong>.</p>
+<h1 id="channels-easy">Channels Easy <!-- omit in toc --></h1>
+<p>A thin wrapper around channel consumers to make things <strong>EASY</strong></p>
+<p><strong><em>Note</em></strong>: This library currently support only text data which is JSON serializable.</p>
+<p><strong>What problem does this library solve?</strong></p>
+<p>This library simplifies two tasks for now
+1. Parse incoming text data as JSON and vice versa.
+2. Generate event on the basis of type passed from client side.</p>
 <h2 id="installation">Installation</h2>
 <p>To get the latest stable release from PyPi</p>
 <pre><code class="language-bash">pip install channels-easy
@@ -109,16 +116,16 @@
 <p>To get the latest commit from GitHub</p>
 <pre><code class="language-bash">pip install -e git+git://github.com/namantam1/channels-easy.git#egg=channels-easy
 </code></pre>
-<!-- TODO: Describe further installation steps (edit / remove the examples below): -->
-
 <p>As <code>channels-easy</code> is a thin wrapper around <code>channels</code> so channels must be in your <code>INSTALLED_APPS</code> in <code>settings.py</code>.</p>
 <pre><code class="language-bash">INSTALLED_APPS = (
     ...,
     'channels',
 )
 </code></pre>
-<h2 id="usage">Usage</h2>
+<h2 id="example">Example</h2>
 <p>All the naming convention used to implement this library is inspired from <a href="https://socket.io/">socket.io</a> to make server implementation simple.</p>
+<p>Get full example project <a href="./example">here</a>.</p>
+<p><strong>Server side</strong></p>
 <pre><code class="language-python"># consumers.py
 from channels_easy.generic import AsyncWebsocketConsumer
 
@@ -135,9 +142,75 @@ class NewConsumer(AsyncWebsocketConsumer):
 
     async def on_message(self, data):
         print(&quot;message from client&quot;, data)
+        # output:
+        # message from client {'text': 'hello'}
+
         await self.emit(&quot;message&quot;, &quot;room1&quot;, {&quot;message&quot;: &quot;hello from server&quot;})
 
 </code></pre>
+<p><strong>Client side</strong></p>
+<pre><code class="language-javascript">// client.js
+const socket = new WebSocket(&quot;ws://localhost:8000/ws/test/&quot;);
+
+socket.onmessage = function ({ data }) {
+    const parsed_data = JSON.parse(data);
+    console.log(parsed_data);
+    // output:
+    // {
+    //     data: {message: 'hello from server'}
+    //     type: &quot;message&quot;
+    // }
+};
+
+socket.onopen = () =&gt; {
+    console.log(&quot;websocket connected...&quot;);
+
+    // send message from client after connected
+    // send with type `message` to receive from subscribed
+    // `on_message` event on server side
+    socket.send(
+        JSON.stringify({
+            type: &quot;message&quot;,
+            data: {
+                text: &quot;hello&quot;,
+            },
+        })
+    );
+};
+
+</code></pre>
+<h2 id="api-usage">API Usage</h2>
+<p><strong>Subscribing to events</strong>
+We can simply subscribe to a message type as</p>
+<pre><code class="language-python">def on_&lt;type&gt;(self, data):
+    ...
+    pass
+</code></pre>
+<p>so if client send data as</p>
+<pre><code class="language-json">{
+    &quot;type&quot;: &quot;message&quot;,
+    &quot;data&quot;: &quot;Hello!&quot;
+}
+</code></pre>
+<p>We can subscribe to message event as</p>
+<pre><code class="language-python">def on_message(self, data):
+    ...
+    pass
+</code></pre>
+<p><strong>Emitting Message</strong></p>
+<p>We can emit message to client using same schema that we used above</p>
+<pre><code class="language-python">def on_message(self, data):
+    ...
+    # some code here
+    ...
+
+    self.emit(
+        &quot;message&quot;,          # type
+        [&quot;room1&quot;],          # room list or string
+        {&quot;text&quot;: &quot;hello&quot;}   # message dict | str | int | list
+    )
+</code></pre>
+<p>Check all APIs <a href="https://namantam1.github.io/channels-easy/apis/">here</a>.</p>
 <h2 id="contribute">Contribute</h2>
 <p>If you want to contribute to this project, please perform the following steps</p>
 <pre><code class="language-bash"># Fork this repository
@@ -150,9 +223,8 @@ git add . &amp;&amp; git commit
 git push -u origin feature_branch
 # Send us a pull request for your feature branch
 </code></pre>
-<!-- In order to run the tests, simply execute ``tox``. This will install two new
-environments (for Django 1.8 and Django 1.9) and run the tests against both
-environments. -->
+<p>In order to run the tests, simply execute <code>poetry run pytest</code>. This will run test created inside
+<code>test</code> directory.</p>
               
             </div>
           </div>
@@ -207,5 +279,5 @@ environments. -->
 
 <!--
 MkDocs version : 1.2.3
-Build Date UTC : 2022-01-10 23:47:42.020471+00:00
+Build Date UTC : 2022-01-12 20:35:15.619748+00:00
 -->
