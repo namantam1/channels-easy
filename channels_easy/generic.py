@@ -26,7 +26,7 @@ class AsyncWebsocketConsumer(BaseConsumer):
         await self.emit_error(error_data)
         await self.close(code)
 
-    async def emit(self, typ: str, to: Union[str, Iterable], data):
+    async def emit(self, typ: str, to: Union[str, int, Iterable], data):
         """Send message to given rooms
 
         Args:
@@ -39,7 +39,7 @@ class AsyncWebsocketConsumer(BaseConsumer):
         # send to each channels
         for group in set(to):
             await self.channel_layer.group_send(
-                group,
+                str(group),
                 {
                     "type": "send_message",
                     "message": {"type": typ, "data": data},
@@ -61,7 +61,7 @@ class AsyncWebsocketConsumer(BaseConsumer):
             )
         )
 
-    async def join(self, room: Union[str, Iterable]):
+    async def join(self, room: Union[str, int, Iterable]):
         """Join room with passed name
 
         Args:
@@ -69,17 +69,17 @@ class AsyncWebsocketConsumer(BaseConsumer):
         """
         assert self.channel_layer is not None, (
             "It looks like you have not specified"
-            " `CHANNEL_LAYERS` in your `settings.py`",
+            " `CHANNEL_LAYERS` in your `settings.py`"
         )
 
-        if isinstance(room, str):
+        if isinstance(room, (str, int)):
             rooms = [room]
         else:
             rooms = room
         for _room in rooms:
-            await self.channel_layer.group_add(_room, self.channel_name)
+            await self.channel_layer.group_add(str(_room), self.channel_name)
 
-    async def leave(self, room: Union[str, Iterable]):
+    async def leave(self, room: Union[str, int, Iterable]):
         """Leave room with passed name
 
         Args:
@@ -87,15 +87,15 @@ class AsyncWebsocketConsumer(BaseConsumer):
         """
         assert self.channel_layer is not None, (
             "It looks like you have not specified"
-            " `CHANNEL_LAYERS` in your `settings.py`",
+            " `CHANNEL_LAYERS` in your `settings.py`"
         )
 
-        if isinstance(room, str):
+        if isinstance(room, (str, int)):
             rooms = [room]
         else:
             rooms = room
         for _room in rooms:
-            await self.channel_layer.group_discard(_room, self.channel_name)
+            await self.channel_layer.group_discard(str(_room), self.channel_name)
 
     async def receive(self, text_data):
         """

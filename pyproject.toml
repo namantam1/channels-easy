@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "channels-easy"
-version = "0.2.2"
+version = "0.2.3"
 description = "A thin wrapper around channels consumer to make things EASY"
 authors = ["Naman Tamrakar <namantam1@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/namantam1/channels-easy"
+homepage = "https://namantam1.github.io/channels-easy"
 repository = "https://github.com/namantam1/channels-easy"
 keywords = ["channels", "django", "websocket"]
 
