@@ -67,6 +67,11 @@ class AsyncWebsocketConsumer(BaseConsumer):
         Args:
             room (Union[str, Iterable]): List of room or a single room
         """
+        assert self.channel_layer is not None, (
+            "It looks like you have not specified"
+            " `CHANNEL_LAYERS` in your `settings.py`",
+        )
+
         if isinstance(room, str):
             rooms = [room]
         else:
@@ -80,6 +85,11 @@ class AsyncWebsocketConsumer(BaseConsumer):
         Args:
             room (Union[str, Iterable]): List of room or a single room
         """
+        assert self.channel_layer is not None, (
+            "It looks like you have not specified"
+            " `CHANNEL_LAYERS` in your `settings.py`",
+        )
+
         if isinstance(room, str):
             rooms = [room]
         else:
