@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "channels-easy"
-version = "0.2.1"
+version = "0.2.2"
 description = "A thin wrapper around channels consumer to make things EASY"
 authors = ["Naman Tamrakar <namantam1@gmail.com>"]
 license = "MIT"
