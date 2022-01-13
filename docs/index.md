@@ -43,7 +43,7 @@ INSTALLED_APPS = (
 
 All the naming convention used to implement this library is inspired from [socket.io](https://socket.io/) to make server implementation simple.
 
-Get full example project [here](./example).
+Get full example project [here](https://github.com/namantam1/channels-easy/tree/main/example).
 
 **Server side**
 ```python
