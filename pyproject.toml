@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "channels-easy"
-version = "0.2.3"
+version = "0.3.0"
 description = "A thin wrapper around channels consumer to make things EASY"
 authors = ["Naman Tamrakar <namantam1@gmail.com>"]
 license = "MIT"
@@ -26,6 +26,7 @@ isort = "^5.10.1"
 flake8 = "^4.0.1"
 mkdocs = "^1.2.3"
 mkdocstrings = "^0.17.0"
+mkdocs-material = "^8.1.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

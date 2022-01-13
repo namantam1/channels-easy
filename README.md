@@ -9,11 +9,14 @@ A thin wrapper around channel consumers to make things **EASY**
 ***Note***: This library currently support only text data which is JSON serializable.
 
 **What problem does this library solve?**
+
 This library simplifies two tasks for now
+
 1. Parse incoming text data as JSON and vice versa.
 2. Generate event on the basis of type passed from client side.
 
 **Table of Contents**
+
 - [Installation](#installation)
 - [Example](#example)
 - [API Usage](#api-usage)
@@ -25,11 +28,6 @@ To get the latest stable release from PyPi
 
 ```bash
 pip install channels-easy
-```
-To get the latest commit from GitHub
-
-```bash
-pip install -e git+git://github.com/namantam1/channels-easy.git#egg=channels-easy
 ```
 
 As `channels-easy` is a thin wrapper around `channels` so channels must be in your `INSTALLED_APPS` in `settings.py`.
@@ -68,7 +66,7 @@ class NewConsumer(AsyncWebsocketConsumer):
         # output:
         # message from client {'text': 'hello'}
 
-        await self.emit("message", "room1", {"message": "hello from server"})
+        await self.emit("message", {"message": "hello from server"}, "room1")
 
 ```
 
@@ -144,8 +142,8 @@ def on_message(self, data):
 
     self.emit(
         "message",          # type
+        {"text": "hello"},  # message dict | str | int | list
         ["room1"],          # room list or string
-        {"text": "hello"}   # message dict | str | int | list
     )
 ```
 

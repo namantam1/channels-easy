@@ -13,4 +13,4 @@ class NewConsumer(AsyncWebsocketConsumer):
 
     async def on_message(self, data):
         print("message from client", data)
-        await self.emit("message", "room1", {"message": "hello from server"})
+        await self.emit("message", {"message": "hello from server"}, "room1")

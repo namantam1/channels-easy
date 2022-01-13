@@ -1,5 +1,6 @@
 from logging import Logger
 from typing import Iterable, Union
+from xmlrpc.client import boolean
 
 from channels.generic.websocket import AsyncWebsocketConsumer as BaseConsumer
 
@@ -16,50 +17,56 @@ def get_handler_name(typ):
 
 
 class AsyncWebsocketConsumer(BaseConsumer):
-    async def close_with_error(self, error_data, code=None):
-        """Close socket after emitting error message
-
-        Args:
-            error_data (Any): Any json serializable data
-            code (int): Close code pass to close
-        """
-        await self.emit_error(error_data)
-        await self.close(code)
-
-    async def emit(self, typ: str, to: Union[str, int, Iterable], data):
+    async def emit(
+        self,
+        typ: str,
+        data,
+        to: Union[str, int, Iterable] = None,
+        close: Union[int, boolean] = None,
+    ):
         """Send message to given rooms
 
         Args:
             typ (str): message type
-            to (Union[str, Iterable]): List of rooms or a single room
             data (Any): data which is json serializable
-        """
-        if not isinstance(to, (list, tuple, set)):
-            to = [to]
-        # send to each channels
-        for group in set(to):
-            await self.channel_layer.group_send(
-                str(group),
-                {
-                    "type": "send_message",
-                    "message": {"type": typ, "data": data},
-                },
-            )
+            to (Union[str, int, Iterable], optional): List of rooms or a single room
+            close (Union[int, boolean], optional): Boolean or error code, If passed \
+                close socket after emitting message
 
-    async def emit_error(self, data):
+        *Note*: If `to` is not passed, emit message to self user
+        """
+        text_data = json.dumps({"type": typ, "data": data})
+
+        if to is None:
+            await self.send(text_data=text_data)
+        else:
+            if not isinstance(to, (list, tuple, set)):
+                to = [to]
+            # send to each group
+            for group in set(to):
+                await self.channel_layer.group_send(
+                    str(group),
+                    {
+                        "type": "send_message",
+                        "text_data": text_data,
+                    },
+                )
+
+        if close is not None:
+            if isinstance(close, boolean):
+                await self.close()
+            else:
+                await self.close(close)
+
+    async def emit_error(self, data, close: Union[int, boolean] = None):
         """Emit message with `error` type and data
 
         Args:
             data (Any): Any json serializable value
+            close (Union[int, boolean], optional): Boolean or error code. If passed \
+                close socket after emitting error
         """
-        await self.send(
-            json.dumps(
-                dict(
-                    type="error",
-                    data=data,
-                )
-            )
-        )
+        await self.emit("error", data, close=close)
 
     async def join(self, room: Union[str, int, Iterable]):
         """Join room with passed name
@@ -114,7 +121,6 @@ class AsyncWebsocketConsumer(BaseConsumer):
 
     async def send_message(self, event):
         """
-        Send message to client
+        Send message down to Websocket
         """
-        # send a message down to client
-        await self.send(json.dumps(event["message"]))
+        await self.send(text_data=event["text_data"])

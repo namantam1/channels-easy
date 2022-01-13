@@ -6,7 +6,7 @@ from channels_easy.generic import AsyncWebsocketConsumer
 
 
 def test_version():
-    assert __version__ == "0.2.3"
+    assert __version__ == "0.3.0"
 
 
 @pytest.mark.django_db
@@ -24,7 +24,7 @@ async def test_async_websocket_consumer():
 
         async def on_message(self, data):
             results["received"] = data
-            await self.emit("message", room, data)
+            await self.emit("message", data, room)
 
         async def disconnect(self, code):
             await self.leave(room)
@@ -62,7 +62,7 @@ async def test_multiple_async_websocket_consumer():
 
         async def on_message(self, data):
             results["received"] = data
-            await self.emit("message", room, data)
+            await self.emit("message", data, room)
 
         async def disconnect(self, code):
             await self.leave(room)
@@ -99,7 +99,7 @@ async def test_error_async_websocket_consumer():
 
         async def on_message(self, data):
             results["received"] = data
-            await self.close_with_error("some error!")
+            await self.emit_error("some error!", close=True)
 
         async def disconnect(self, code):
             results["disconnected"] = True
